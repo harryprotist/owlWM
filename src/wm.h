@@ -17,14 +17,25 @@ struct wm_config {
 };
 typedef struct wm_config wm_config;
 
+struct x_screen {
+  int id;
+  int w;
+  int h;
+};
+typedef struct x_screen x_screen;
+
 struct x_container {
   Display * dpy;
+  Drawable draw;
+  GC gc;
   Window root;
   XWindowAttributes attr;
   XButtonEvent start;
   XEvent ev; 
+  x_screen screen;
 };
 typedef struct x_container x_container;
+
 
 wm_config* config(char* f);
 x_container* init(wm_config* c);
