@@ -1,3 +1,3 @@
 #WM
 
-version 0.1: prints "woopwoopwoop" when alt+q is pressed
+version 0.2: move windows with `alt+hjkl`, resize with `alt+meta+hjkl`, cycle focus with `alt+f`
