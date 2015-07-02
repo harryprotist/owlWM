@@ -18,6 +18,9 @@ typedef struct key_pair key_pair;
 
 struct wm_config {
   key_pair* keys;
+  int main_mod;
+  int mov_mod;
+  int mut_mod;
 };
 typedef struct wm_config wm_config;
 
@@ -49,5 +52,6 @@ void cleanup(x_container* x, wm_config* c);
 
 int handle_next (x_container* x, wm_config* c, XKeyPressedEvent kev);
 int handle_move_resize (x_container* x, wm_config* c, XKeyPressedEvent kev);
+int handle_quit (x_container* x, wm_config* c, XKeyPressedEvent kev);
 
 #endif

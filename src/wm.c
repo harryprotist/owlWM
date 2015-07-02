@@ -5,49 +5,45 @@
 #include "wm.h"
 #include "util.h"
 
-wm_config* config(char* f) {
-  wm_config* c = malloc(sizeof(wm_config));
-  key_pair* k = malloc(sizeof(key_pair));
-  k->name = "quit";
-  k->key = "Q";
-  key_pair* ml = malloc(sizeof(key_pair));
-  ml->name = "left"; ml->key = "H"; k->next = ml;
-  key_pair* mr = malloc(sizeof(key_pair));
-  mr->name = "right"; mr->key = "L"; ml->next = mr;
-  key_pair* md = malloc(sizeof(key_pair));
-  md->name = "down"; md->key = "J"; mr->next = md;
-  key_pair* mu = malloc(sizeof(key_pair));
-  mu->name = "up"; mu->key = "K"; md->next = mu;
-  key_pair* fk = malloc(sizeof(key_pair));
-  fk->name = "next"; fk->key = "F"; mu->next = fk;
-  c->keys = k;
-  return c;
-}
-
 int event(x_container* x, wm_config* c) {
   int ret;
   XNextEvent(x->dpy, &(x->ev));
   if (x->ev.type == KeyPress ) {
     XKeyPressedEvent kev = x->ev.xkey;
     if ((ret = handle_next(x, c, kev)) != WM_NONE) return ret;
-    if ((ret = handle_move_resize(x, c, kev)) != WM_NONE) return ret;
+    else if ((ret = handle_move_resize(x, c, kev)) != WM_NONE) return ret;
+    else if ((ret = handle_quit(x, c, kev)) != WM_NONE) return ret;
   }
   return 1;
 }
 
 int handle_next(x_container* x, wm_config* c, XKeyPressedEvent kev) {
-  if (kev.keycode == get_key(x, c->keys, "next")) {
+  if (kev.state == c->main_mod) {
+    int dir = 0;
+    if (kev.keycode == get_key(x, c->keys, "down")
+    || kev.keycode == get_key(x, c->keys, "right")) {
+      dir = 1;   
+    } else if (kev.keycode == get_key(x, c->keys, "up")
+    || kev.keycode == get_key(x, c->keys, "left")) {
+      dir = -1;
+    } else {
+      return WM_NONE;
+    }
     Window* children, root_return, parent_return, new_foc;
     int nc;
     XQueryTree(x->dpy, x->root, &root_return, &parent_return, &children, &nc);
     for (int i = 0; i < nc; i++) {
+      fprintf(stderr, "foc: %d, num %d\n", x->foc, children[i]);
       if (children[i] == x->foc) {
-        if (i == nc - 1) new_foc = children[0];
-        else new_foc = children[i + 1];
+        if (dir == 1 && i == nc - 1) new_foc = children[0];
+        else if (dir == -1 && i == 0) new_foc = children[nc - 1];
+        else new_foc = children[i + dir];
         break;
       }
-      if (i == nc - 1) new_foc = children[0];
+      if (dir == -1 && i == nc - 1 && nc > 2) new_foc = children[nc - 2];
+      else if (i == nc - 1) new_foc = children[0];
     }
+    fprintf(stderr, "\n");
     x->foc = new_foc;
     XSetInputFocus(x->dpy, x->foc, RevertToParent, CurrentTime);
     XRaiseWindow(x->dpy, x->foc);
@@ -58,14 +54,14 @@ int handle_next(x_container* x, wm_config* c, XKeyPressedEvent kev) {
   return WM_NONE;
 }
 int handle_move_resize (x_container* x, wm_config* c, XKeyPressedEvent kev) {
+  if (kev.state != c->mov_mod && kev.state != c->mut_mod) return WM_NONE;
   int s = 100, xd = 0, yd = 0, wd = 0, hd = 0;
-  if      (kev.keycode == get_key(x, c->keys, "left"))  xd -= s;
-  else if (kev.keycode == get_key(x, c->keys, "right")) xd += s;
-  else if (kev.keycode == get_key(x, c->keys, "down"))  yd += s;
-  else if (kev.keycode == get_key(x, c->keys, "up"))    yd -= s;
-  else if (kev.keycode == get_key(x, c->keys, "quit")) return WM_EXIT;
-  else return WM_NONE;
-  if (kev.state & 0x40) {
+    if      (kev.keycode == get_key(x, c->keys, "left"))  xd -= s;
+    else if (kev.keycode == get_key(x, c->keys, "right")) xd += s;
+    else if (kev.keycode == get_key(x, c->keys, "down"))  yd += s;
+    else if (kev.keycode == get_key(x, c->keys, "up"))    yd -= s;
+    else return WM_NONE;
+  if (kev.state == c->mut_mod) {
     wd = xd;
     hd = yd; 
     xd = yd = 0;
@@ -76,6 +72,11 @@ int handle_move_resize (x_container* x, wm_config* c, XKeyPressedEvent kev) {
     attr.x + xd, attr.y + yd, attr.width + wd, attr.height + hd
   ); 
   return WM_OK;
+}
+int handle_quit (x_container* x, wm_config* c, XKeyPressedEvent kev) {
+  if (kev.keycode == get_key(x, c->keys, "quit") && kev.state == c->main_mod)
+    return WM_EXIT;
+  return WM_NONE;
 }
 
 void cleanup (x_container* x, wm_config* c) {
