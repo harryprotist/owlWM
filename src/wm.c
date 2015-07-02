@@ -1,6 +1,7 @@
 #include <X11/Xlib.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
 
 #include "wm.h"
 #include "util.h"
@@ -86,7 +87,10 @@ int handle_command (x_container* x, wm_config* c, XKeyPressedEvent kev) {
   if (kev.state != c->main_mod) return WM_NONE;
   for (int i = 0; i < c->cmd_arr.len; i++) {
     if (kev.keycode == c->cmd_arr.cmds[i].key) {
-      system(c->cmd_arr.cmds[i].command); 
+      if (!fork()) {
+        system(c->cmd_arr.cmds[i].command); 
+        exit(0);
+      }
       return WM_OK;
     }
   }
