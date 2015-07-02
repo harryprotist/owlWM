@@ -36,6 +36,7 @@ wm_config* config(x_container* x, char* f) {
   c->main_mod = Mod1Mask;
   c->mov_mod = Mod1Mask | ShiftMask;
   c->mut_mod = Mod1Mask | ControlMask;
+  get_cmd_arr(x, job, &(c->cmd_arr));
 
   free(job);
   free(cont);
@@ -68,4 +69,7 @@ void grab_keys(x_container* x, wm_config* c) {
     grab_key(x, mod, c->k_down);
   }
   grab_key(x, c->main_mod, c->k_quit);
+  for (int i = 0; i < c->cmd_arr.len; i++) {
+    grab_key(x, c->main_mod, c->cmd_arr.cmds[i].key);
+  }
 }

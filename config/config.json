@@ -5,5 +5,11 @@
     "right": "L",
     "down": "J",
     "up": "K"
-  }
+  },
+  "commands": [
+    {"key": "T", "command": "urxvt"},
+    {"key": "9", "command": "echo '9'"},
+    {"key": "0", "command": "echo '0'"},
+    {"key": "P", "command": "echo 'P'"}
+  ]
 }

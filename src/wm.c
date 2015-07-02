@@ -13,6 +13,7 @@ int event(x_container* x, wm_config* c) {
     if ((ret = handle_next(x, c, kev)) != WM_NONE) return ret;
     else if ((ret = handle_move_resize(x, c, kev)) != WM_NONE) return ret;
     else if ((ret = handle_quit(x, c, kev)) != WM_NONE) return ret;
+    else if ((ret = handle_command(x, c, kev)) != WM_NONE) return ret;
   }
   return 1;
 }
@@ -29,7 +30,7 @@ int handle_next(x_container* x, wm_config* c, XKeyPressedEvent kev) {
     }
     XWindowAttributes attr;
     Window* children, root_return, parent_return, new_foc = x->foc;
-    int nc;
+    unsigned int nc;
     XQueryTree(x->dpy, x->root, &root_return, &parent_return, &children, &nc);
     for (int i = 0; i < nc; i++) {
       XGetWindowAttributes(x->dpy, children[i], &attr);
@@ -79,6 +80,16 @@ int handle_move_resize (x_container* x, wm_config* c, XKeyPressedEvent kev) {
 int handle_quit (x_container* x, wm_config* c, XKeyPressedEvent kev) {
   if (kev.keycode == c->k_quit && kev.state == c->main_mod)
     return WM_EXIT;
+  return WM_NONE;
+}
+int handle_command (x_container* x, wm_config* c, XKeyPressedEvent kev) {
+  if (kev.state != c->main_mod) return WM_NONE;
+  for (int i = 0; i < c->cmd_arr.len; i++) {
+    if (kev.keycode == c->cmd_arr.cmds[i].key) {
+      system(c->cmd_arr.cmds[i].command); 
+      return WM_OK;
+    }
+  }
   return WM_NONE;
 }
 

@@ -9,7 +9,16 @@
 #define WM_OK 1
 #define WM_NONE 0
 
-struct wm_config {
+typedef struct cmd {
+  const char* command;
+  int key;
+} cmd;
+typedef struct cmd_arr {
+  int len;
+  cmd* cmds;
+} cmd_arr;
+
+typedef struct wm_config {
   int main_mod;
   int mov_mod;
   int mut_mod;
@@ -18,17 +27,16 @@ struct wm_config {
   int k_right;
   int k_down;
   int k_up;
-};
-typedef struct wm_config wm_config;
+  cmd_arr cmd_arr;
+} wm_config;
 
-struct x_screen {
+typedef struct x_screen {
   int id;
   int w;
   int h;
-};
-typedef struct x_screen x_screen;
+} x_screen;
 
-struct x_container {
+typedef struct x_container {
   Display * dpy;
   Drawable draw;
   GC gc;
@@ -38,9 +46,7 @@ struct x_container {
   XButtonEvent start;
   XEvent ev; 
   x_screen screen;
-};
-typedef struct x_container x_container;
-
+} x_container;
 
 wm_config* config(x_container* x, char* f);
 x_container* init();
@@ -52,5 +58,6 @@ void grab_keys(x_container* x, wm_config* c);
 int handle_next (x_container* x, wm_config* c, XKeyPressedEvent kev);
 int handle_move_resize (x_container* x, wm_config* c, XKeyPressedEvent kev);
 int handle_quit (x_container* x, wm_config* c, XKeyPressedEvent kev);
+int handle_command (x_container* x, wm_config* c, XKeyPressedEvent kev);
 
 #endif
