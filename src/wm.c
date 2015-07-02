@@ -29,21 +29,26 @@ int handle_next(x_container* x, wm_config* c, XKeyPressedEvent kev) {
     } else {
       return WM_NONE;
     }
-    Window* children, root_return, parent_return, new_foc;
+    XWindowAttributes attr;
+    Window* children, root_return, parent_return, new_foc = x->foc;
     int nc;
     XQueryTree(x->dpy, x->root, &root_return, &parent_return, &children, &nc);
     for (int i = 0; i < nc; i++) {
+      XGetWindowAttributes(x->dpy, children[i], &attr);
+      if (attr.width * attr.height <= 1) {
+        if (nc > 1) children[i] = children[(i + 1) % nc];
+        else return WM_OK;
+      }
+      new_foc = children[i];
       if (children[i] == x->foc) {
         if (dir == 1 && i == nc - 1) new_foc = children[0];
         else if (dir == -1 && i == 0) new_foc = children[nc - 1];
         else new_foc = children[i + dir];
         break;
       }
-      if (dir == -1 && i == nc - 1 && nc > 2) new_foc = children[nc - 2];
-      else if (i == nc - 1) new_foc = children[0];
     }
     x->foc = new_foc;
-    XSetInputFocus(x->dpy, x->foc, RevertToParent, CurrentTime);
+    XSetInputFocus(x->dpy, x->foc, RevertToNone, CurrentTime);
     XRaiseWindow(x->dpy, x->foc);
 
     XFree(children);
