@@ -5,6 +5,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#define WM_EXIT 2
+#define WM_OK 1
+#define WM_NONE 0
+
 struct key_pair {
   char* name;
   char* key;
@@ -29,6 +33,7 @@ struct x_container {
   Drawable draw;
   GC gc;
   Window root;
+  Window foc;
   XWindowAttributes attr;
   XButtonEvent start;
   XEvent ev; 
@@ -41,5 +46,8 @@ wm_config* config(char* f);
 x_container* init(wm_config* c);
 int event(x_container* x, wm_config* c);
 void cleanup(x_container* x, wm_config* c);
+
+int handle_next (x_container* x, wm_config* c, XKeyPressedEvent kev);
+int handle_move_resize (x_container* x, wm_config* c, XKeyPressedEvent kev);
 
 #endif

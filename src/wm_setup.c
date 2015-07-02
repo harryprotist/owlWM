@@ -15,6 +15,9 @@ x_container* init(wm_config* c) {
   x->screen.h = DisplayHeight(x->dpy, x->screen.id);
   x->root = DefaultRootWindow(x->dpy);
 
+  XSetInputFocus(x->dpy, x->root, RevertToNone, CurrentTime);
+  x->foc = x->root;
+
   for (key_pair* k = c->keys; k != NULL; k = k->next) {
     XGrabKey(x->dpy,
       XKeysymToKeycode(x->dpy,XStringToKeysym(k->key)),
