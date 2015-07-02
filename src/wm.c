@@ -33,7 +33,6 @@ int handle_next(x_container* x, wm_config* c, XKeyPressedEvent kev) {
     int nc;
     XQueryTree(x->dpy, x->root, &root_return, &parent_return, &children, &nc);
     for (int i = 0; i < nc; i++) {
-      fprintf(stderr, "foc: %d, num %d\n", x->foc, children[i]);
       if (children[i] == x->foc) {
         if (dir == 1 && i == nc - 1) new_foc = children[0];
         else if (dir == -1 && i == 0) new_foc = children[nc - 1];
@@ -43,7 +42,6 @@ int handle_next(x_container* x, wm_config* c, XKeyPressedEvent kev) {
       if (dir == -1 && i == nc - 1 && nc > 2) new_foc = children[nc - 2];
       else if (i == nc - 1) new_foc = children[0];
     }
-    fprintf(stderr, "\n");
     x->foc = new_foc;
     XSetInputFocus(x->dpy, x->foc, RevertToParent, CurrentTime);
     XRaiseWindow(x->dpy, x->foc);
@@ -68,6 +66,8 @@ int handle_move_resize (x_container* x, wm_config* c, XKeyPressedEvent kev) {
   }
   XWindowAttributes attr;
   XGetWindowAttributes(x->dpy, x->foc, &attr);
+  if (attr.width + wd < 0 || attr.height + hd < 0)
+    return WM_OK;
   XMoveResizeWindow(x->dpy, x->foc,
     attr.x + xd, attr.y + yd, attr.width + wd, attr.height + hd
   ); 
