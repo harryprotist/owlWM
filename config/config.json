@@ -1,0 +1,9 @@
+{
+  "keys": {
+    "quit": "Q",
+    "left": "H",
+    "right": "L",
+    "down": "J",
+    "up": "K"
+  }
+}

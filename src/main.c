@@ -6,8 +6,9 @@
 #include "wm.h"
 
 int main(int argc, char** argv) {
-  wm_config* c = config("doesn't matter");
-  x_container* x = init(c);
+  x_container* x = 0;
+  wm_config* c = 0;
+  setup("./config/config.json", &x, &c);
   while (1) {
     if (!event(x, c)) {
       cleanup(x, c);

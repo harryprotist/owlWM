@@ -2,7 +2,11 @@
 #define _WM_UTIL_H_
 
 #include "wm.h"
+#include <json.h>
 
-int get_key(x_container* x, key_pair* keys, char* name);
+void die(char* mgs);
+int get_key(x_container* x, const char* name);
+int get_key_name(x_container* x, json_object* job, char* key);
+void grab_key(x_container* x, int mod, int key);
 
 #endif

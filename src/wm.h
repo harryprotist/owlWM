@@ -9,18 +9,15 @@
 #define WM_OK 1
 #define WM_NONE 0
 
-struct key_pair {
-  char* name;
-  char* key;
-  struct key_pair* next;
-};
-typedef struct key_pair key_pair;
-
 struct wm_config {
-  key_pair* keys;
   int main_mod;
   int mov_mod;
   int mut_mod;
+  int k_quit;
+  int k_left;
+  int k_right;
+  int k_down;
+  int k_up;
 };
 typedef struct wm_config wm_config;
 
@@ -45,10 +42,12 @@ struct x_container {
 typedef struct x_container x_container;
 
 
-wm_config* config(char* f);
-x_container* init(wm_config* c);
+wm_config* config(x_container* x, char* f);
+x_container* init();
 int event(x_container* x, wm_config* c);
 void cleanup(x_container* x, wm_config* c);
+void setup(char* f, x_container** x, wm_config** c);
+void grab_keys(x_container* x, wm_config* c);
 
 int handle_next (x_container* x, wm_config* c, XKeyPressedEvent kev);
 int handle_move_resize (x_container* x, wm_config* c, XKeyPressedEvent kev);

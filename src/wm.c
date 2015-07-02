@@ -20,11 +20,9 @@ int event(x_container* x, wm_config* c) {
 int handle_next(x_container* x, wm_config* c, XKeyPressedEvent kev) {
   if (kev.state == c->main_mod) {
     int dir = 0;
-    if (kev.keycode == get_key(x, c->keys, "down")
-    || kev.keycode == get_key(x, c->keys, "right")) {
+    if (kev.keycode == c->k_down || kev.keycode == c->k_right) {
       dir = 1;   
-    } else if (kev.keycode == get_key(x, c->keys, "up")
-    || kev.keycode == get_key(x, c->keys, "left")) {
+    } else if (kev.keycode == c->k_up || kev.keycode == c->k_left) {
       dir = -1;
     } else {
       return WM_NONE;
@@ -59,10 +57,10 @@ int handle_next(x_container* x, wm_config* c, XKeyPressedEvent kev) {
 int handle_move_resize (x_container* x, wm_config* c, XKeyPressedEvent kev) {
   if (kev.state != c->mov_mod && kev.state != c->mut_mod) return WM_NONE;
   int s = 100, xd = 0, yd = 0, wd = 0, hd = 0;
-    if      (kev.keycode == get_key(x, c->keys, "left"))  xd -= s;
-    else if (kev.keycode == get_key(x, c->keys, "right")) xd += s;
-    else if (kev.keycode == get_key(x, c->keys, "down"))  yd += s;
-    else if (kev.keycode == get_key(x, c->keys, "up"))    yd -= s;
+    if      (kev.keycode == c->k_left)  xd -= s;
+    else if (kev.keycode == c->k_right) xd += s;
+    else if (kev.keycode == c->k_down)  yd += s;
+    else if (kev.keycode == c->k_up)    yd -= s;
     else return WM_NONE;
   if (kev.state == c->mut_mod) {
     wd = xd;
@@ -79,16 +77,12 @@ int handle_move_resize (x_container* x, wm_config* c, XKeyPressedEvent kev) {
   return WM_OK;
 }
 int handle_quit (x_container* x, wm_config* c, XKeyPressedEvent kev) {
-  if (kev.keycode == get_key(x, c->keys, "quit") && kev.state == c->main_mod)
+  if (kev.keycode == c->k_quit && kev.state == c->main_mod)
     return WM_EXIT;
   return WM_NONE;
 }
 
 void cleanup (x_container* x, wm_config* c) {
   free(x);
-  key_pair* k = c->keys,* nk = 0;
-  for (; k != NULL; k = nk) {
-    nk = k->next;
-    free(k);
-  } 
+  free(c);
 }
