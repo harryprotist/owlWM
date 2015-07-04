@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall
+CFLAGS=-Wall -std=c11
 LDFLAGS=-lX11
 DEPS=src/wm.h src/util.h
 OBJ=src/wm.o src/main.o src/util.o src/wm_setup.o
