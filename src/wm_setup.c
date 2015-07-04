@@ -10,6 +10,7 @@ void setup(char* f, x_container** x, wm_config** c) {
   *x = init();
   *c = config(*x, f);
   grab_keys(*x, *c); 
+  grab_wm_events(*x);
 }
 
 wm_config* config(x_container* x, char* f) {
@@ -60,6 +61,12 @@ x_container* init() {
   return x;
 }
 
+void grab_wm_events(x_container* x) {
+  XSelectInput(x->dpy, x->root,
+    SubstructureRedirectMask | SubstructureNotifyMask
+  );
+  XSync(x->dpy, 0);
+}
 void grab_keys(x_container* x, wm_config* c) {
   for (int i = 0; i < 3; i++ ) {
     int mod = (i == 0)? (c->main_mod):((i == 1)? (c->mut_mod):(c->mov_mod));

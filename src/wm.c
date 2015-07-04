@@ -15,6 +15,9 @@ int event(x_container* x, wm_config* c) {
     else if ((ret = handle_move_resize(x, c, kev)) != WM_NONE) return ret;
     else if ((ret = handle_quit(x, c, kev)) != WM_NONE) return ret;
     else if ((ret = handle_command(x, c, kev)) != WM_NONE) return ret;
+  } else if (x->ev.type == CreateNotify) {
+    XCreateWindowEvent cev = x->ev.xcreatewindow;
+    if ((ret = handle_create(x, c, cev)) != WM_NONE) return ret;
   }
   return 1;
 }
@@ -95,6 +98,9 @@ int handle_command (x_container* x, wm_config* c, XKeyPressedEvent kev) {
     }
   }
   return WM_NONE;
+}
+int handle_create (x_container* x, wm_config* c, XCreateWindowEvent cev) {
+  return WM_NONE; // to be implemented   
 }
 
 void cleanup (x_container* x, wm_config* c) {

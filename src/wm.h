@@ -54,10 +54,12 @@ int event(x_container* x, wm_config* c);
 void cleanup(x_container* x, wm_config* c);
 void setup(char* f, x_container** x, wm_config** c);
 void grab_keys(x_container* x, wm_config* c);
+void grab_wm_events(x_container* x);
 
 int handle_next (x_container* x, wm_config* c, XKeyPressedEvent kev);
 int handle_move_resize (x_container* x, wm_config* c, XKeyPressedEvent kev);
 int handle_quit (x_container* x, wm_config* c, XKeyPressedEvent kev);
 int handle_command (x_container* x, wm_config* c, XKeyPressedEvent kev);
+int handle_create (x_container* x, wm_config* c, XCreateWindowEvent kev);
 
 #endif

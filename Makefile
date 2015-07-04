@@ -11,4 +11,4 @@ LDFLAGS += $(shell pkg-config --libs json-c)
 	$(CC) -c -o $@ $< $(CFLAGS) $(LDFLAGS)
 
 wm: $(OBJ)
-	gcc -o bin/wm $^ $(CFLAGS) $(LDFLAGS)
+	gcc -o bin/owlwm $^ $(CFLAGS) $(LDFLAGS)
